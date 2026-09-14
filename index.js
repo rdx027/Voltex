@@ -13,7 +13,7 @@ function createBot() {
     host: 'Voltex-smp.aternos.me',
     port: 61655,
     username: 'Bot_247',
-    version: 1.20.1
+    version: '1.20.1'
   });
 
   bot.on('spawn', () => {
