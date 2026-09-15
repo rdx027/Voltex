@@ -14,7 +14,7 @@ function createBot() {
     host: 'Voltex-smp.aternos.me', // استبدله بـ DynIP إذا استمر عدم الدخول
     port: 61655,                   // استبدله بـ Port الـ DynIP
     username: 'Bot_247',
-    version: false,
+    version: '1.20.1'
     checkTimeoutInterval: 60 * 1000
   });
 
