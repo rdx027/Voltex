@@ -1,58 +1,56 @@
 const mineflayer = require('mineflayer');
-const http = require('http');
+const express = require('express');
 
-// 1. خادم HTTP لإبقاء Render شغالاً 24/7 ومستجيباً للبينج
-http.createServer((req, res) => {
-  res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
-  res.write("Bot Status: Active 24/7");
-  res.end();
-}).listen(process.env.PORT || 3000);
+// --- إنشاء سيرفر HTTP لمنع Render من النوم ---
+const app = express();
+const PORT = process.env.PORT || 10000;
 
+app.get('/', (req, res) => {
+  res.send('البوت شغال 24/7 بنجاح!');
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+
+// --- إعدادات البوت ---
 function createBot() {
   console.log('🔄 جاري محاولة الاتصال بالسيرفر...');
 
   const bot = mineflayer.createBot({
-    host: 'Voltex-smp.aternos.me', // ضع DynIP الخاص بك إذا كنت تستخدمه
-    port: 61655,                   // ضع Port الخاص بك
-    username: 'Bot_247',
-    version: '1.20.4'                // يتعرف على الإصدار تلقائياً
-    checkTimeoutInterval: 120 * 1000 // إطالة وقت الاستجابة لعدم قطع الاتصال
+    host: 'knifejaw.aternos.host', //  DynIP من Aternos بدون البورت
+    port: 61655,                   // ضع رقم الـ Port الجديد من Aternos
+    username: 'VoltexBot',
+    version: '1.20.1'
   });
 
+  // تسجيل الدخول والتحرك تلقائياً (Anti-AFK)
   bot.on('spawn', () => {
     console.log('✅ دخل البوت إلى السيرفر ولن يخرج!');
-
-    // تسجيل الدخول في حال وجود بلجن AuthMe
+    
+    // تسجيل الدخول أو التسجيل تلقائياً
     setTimeout(() => {
-      bot.chat('/register BotPass123 BotPass123');
-      bot.chat('/login BotPass123');
+      bot.chat('/register 123456789 123456789');
+      bot.chat('/login 123456789');
     }, 2000);
 
-    // حركات مستمرة ومتنوعة لمنع الطرد بسب الـ AFK
+    // التحرك الدائم لتفادي الطرد بسبب الـ AFK
     setInterval(() => {
-      // 1. قفز
       bot.setControlState('jump', true);
-      setTimeout(() => bot.setControlState('jump', false), 300);
-
-      // 2. الالتفات ينفذ نظرة خفيفة لمنع تجميد الحساب
-      const yaw = Math.random() * Math.PI * 2;
-      const pitch = (Math.random() - 0.5) * Math.PI;
-      bot.look(yaw, pitch, true);
-    }, 4000); // تكرار كل 4 ثوانٍ
+      setTimeout(() => {
+        bot.setControlState('jump', false);
+      }, 500);
+    }, 15000);
   });
 
-  // إذا حدث فصل طارئ من السيرفر، يعيد الاتصال فوراً خلال ثانيتين فقط
+  // إعادة الاتصال التلقائي عند الانقطاع
   bot.on('end', () => {
-    console.log('⚠️ انقطع الاتصال، إعادة الدخول فوراً خلال ثانيتين...');
-    setTimeout(createBot, 2000);
+    console.log('⚠️ انقطع الاتصال، إعادة الدخول فوراً خلال 5 ثوانٍ...');
+    setTimeout(createBot, 5000);
   });
 
   bot.on('error', (err) => {
     console.log('❌ خطأ شبكة:', err.message);
-  });
-
-  bot.on('kicked', (reason) => {
-    console.log('❌ سبب الطرد:', reason);
   });
 }
 
