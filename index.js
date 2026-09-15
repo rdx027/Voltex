@@ -5,15 +5,15 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 
 app.get('/', (req, res) => {
-  res.send('Bot is running 24/7');
+  res.send('Bot Status: Active');
 });
 
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`Server is live on port ${PORT}`);
 });
 
 function createBot() {
-  console.log('Attempting to connect to Minecraft server...');
+  console.log('Connecting to Minecraft server...');
 
   const bot = mineflayer.createBot({
     host: 'knifejaw.aternos.host',
@@ -23,8 +23,8 @@ function createBot() {
   });
 
   bot.on('spawn', () => {
-    console.log('SUCCESS: Bot joined the server!');
-    
+    console.log('SUCCESS: Bot successfully entered the server!');
+
     setTimeout(() => {
       bot.chat('/register 123456789 123456789');
       bot.chat('/login 123456789');
@@ -39,12 +39,12 @@ function createBot() {
   });
 
   bot.on('end', () => {
-    console.log('Connection lost. Reconnecting in 5 seconds...');
+    console.log('Disconnected. Retrying connection in 5 seconds...');
     setTimeout(createBot, 5000);
   });
 
   bot.on('error', (err) => {
-    console.log('Network error:', err.message);
+    console.log('Bot Error:', err.message);
   });
 }
 
