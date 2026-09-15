@@ -1,40 +1,39 @@
 const mineflayer = require('mineflayer');
 const http = require('http');
 
-// خادم بسيط لإبقاء البوت حياً على Render
+// خادم HTTP لإبقاء الخدمة نشطة على Render
 http.createServer((req, res) => {
-  res.write("Bot is Alive!");
+  res.write("Bot Status: Active 24/7");
   res.end();
 }).listen(process.env.PORT || 3000);
 
-// إعدادات بوت الماين كرافت
 function createBot() {
+  console.log('🔄 جاري محاولة الاتصال بالسيرفر...');
+
   const bot = mineflayer.createBot({
-    host: 'Voltex-smp.aternos.me',
-    port: 61655,
+    host: 'Voltex-smp.aternos.me', // استبدله بـ DynIP إذا استمر عدم الدخول
+    port: 61655,                   // استبدله بـ Port الـ DynIP
     username: 'Bot_247',
-    version: false
+    version: false,
+    checkTimeoutInterval: 60 * 1000
   });
 
   bot.on('spawn', () => {
     console.log('✅ دخل البوت إلى السيرفر بنجاح!');
   });
 
-  // الرد على الرسائل تلقائياً
-  bot.on('chat', (username, message) => {
-    if (username === bot.username) return;
-    if (message === '!ping') {
-      bot.chat('Pong! البوت شغال 24/7 🔥');
-    }
+  bot.on('kicked', (reason) => {
+    console.log('❌ تم طرد البوت. السبب:', reason);
   });
 
-  // إعادة الاتصال تلقائياً عند الخروج أو الرسوب
+  bot.on('error', (err) => {
+    console.log('❌ خطأ في الاتصال:', err.message);
+  });
+
   bot.on('end', () => {
-    console.log('⚠️ تم فصل البوت، إعادة الاتصال خلال 10 ثوانٍ...');
-    setTimeout(createBot, 10000);
+    console.log('⚠️ انفصل البوت. إعادة المحاولة بعد 15 ثانية...');
+    setTimeout(createBot, 15000);
   });
-
-  bot.on('error', err => console.log('خطأ:', err));
 }
 
 createBot();
