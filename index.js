@@ -25,25 +25,15 @@ function createBot() {
 
   const bot = mineflayer.createBot({
     host: '185.107.192.98',
-    port: 61655, 
-    username: 'VoltexBot_v3',
+    port: 61655,
+    username: 'VoltexBot_v4', 
     version: '1.20.1'
   });
 
   bot.on('spawn', () => {
-    console.log('SUCCESS: Bot joined!');
+    console.log('SUCCESS: Bot joined without typing in chat!');
 
-    // إرسال أمر الدخول فقط بعد 4 ثوانٍ من الانضمام
-    setTimeout(() => {
-      bot.chat('/login 123456789');
-    }, 4000);
-
-    // إذا لم يكن مسجلاً سابقاً، يرسل التسجيل بعد 7 ثوانٍ
-    setTimeout(() => {
-      bot.chat('/register 123456789 123456789');
-    }, 7000);
-
-    // حركة قفز خفيفة كل 5 ثوانٍ لمنع طرد الـ AFK
+    // حركة قفز خفيفة فقط لمنع طرد الـ AFK بدون كتابة أي رسالة
     setInterval(() => {
       if (bot.entity) {
         bot.setControlState('jump', true);
