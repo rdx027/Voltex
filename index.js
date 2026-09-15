@@ -22,14 +22,16 @@ function createBot() {
     version: '1.20.1'
   });
 
-  bot.on('spawn', () => {
-    console.log('SUCCESS: Bot successfully entered the server!');
+    bot.on('spawn', () => {
+    console.log('SUCCESS: Bot entered the server!');
 
+    // انتظر 4 ثوانٍ كاملة قبل إرسال أوامر تسجيل الدخول
     setTimeout(() => {
       bot.chat('/register 123456789 123456789');
       bot.chat('/login 123456789');
-    }, 2000);
+    }, 4000);
 
+    // الحركة الخفيفة لمنع الطرد AFK
     setInterval(() => {
       bot.setControlState('jump', true);
       setTimeout(() => {
@@ -37,15 +39,3 @@ function createBot() {
       }, 500);
     }, 15000);
   });
-
-  bot.on('end', () => {
-    console.log('Disconnected. Retrying connection in 5 seconds...');
-    setTimeout(createBot, 5000);
-  });
-
-  bot.on('error', (err) => {
-    console.log('Bot Error:', err.message);
-  });
-}
-
-createBot();
