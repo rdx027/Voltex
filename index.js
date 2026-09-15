@@ -5,7 +5,7 @@ const https = require('https');
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-const RENDER_URL = 'https://voltex-c8qu.onrender.com';
+const RENDER_URL = 'https://voltex-smp-270.onrender.com';
 
 app.get('/', (req, res) => {
   res.send('Bot Status: Online 24/7');
@@ -15,7 +15,7 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// إرسال Ping كل 5 دقائق لضمان بقاء Render مستيقظاً
+// إرسال Ping كل 5 دقائق لضمان عدم نوم Render
 setInterval(() => {
   https.get(RENDER_URL, () => {}).on('error', () => {});
 }, 300000);
@@ -26,7 +26,7 @@ function createBot() {
   const bot = mineflayer.createBot({
     host: '185.107.192.98',
     port: 61655, // تأكد من رقم البورت الحالي من أترنوس
-    username: 'Voltex_Silent',
+    username: 'VoltexBot_99', // اسم جديد تماماً لمنع تعارض الجلسات
     version: '1.20.1',
     physicsEnabled: false
   });
@@ -44,11 +44,9 @@ function createBot() {
     setTimeout(createBot, 30000);
   });
 
-  // منع السيرفر من الانهيار عند حدوث ECONNRESET
   bot.on('error', (err) => {
     console.log('Socket Error caught:', err.message);
   });
 }
 
-// تأكد من أن السيرفر شغال في أترنوس أولاً، ثم اترك البوت يتصل
 setTimeout(createBot, 5000);
