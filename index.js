@@ -16,7 +16,7 @@ function createBot() {
   console.log('Connecting to Minecraft server...');
 
   const bot = mineflayer.createBot({
-    host: 'knifejaw.aternos.host',
+    host: 'Voltex-smp.aternos.me',
     port: 61655,
     username: 'VoltexBot',
     version: '1.20.1'
