@@ -5,6 +5,7 @@ const https = require('https');
 const app = express();
 const PORT = process.env.PORT || 10000;
 
+// تأكد من أن هذا الرابط يطابق رابط مشروعك الحالي على Render
 const RENDER_URL = 'https://voltex-smp-270.onrender.com';
 
 app.get('/', (req, res) => {
@@ -25,8 +26,8 @@ function createBot() {
 
   const bot = mineflayer.createBot({
     host: '185.107.192.98',
-    port: 61655, // تأكد من رقم البورت الحالي من أترنوس
-    username: 'VoltexBot_99', // اسم جديد تماماً لمنع تعارض الجلسات
+    port: 61655, // <--- غير هذا الرقم إلى رقم البورت الجديد من أترنوس
+    username: 'Voltex_99',
     version: '1.20.1',
     physicsEnabled: false
   });
