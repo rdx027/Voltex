@@ -15,29 +15,30 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// إبقاء الاستضافة مستيقظة (بضبط القيمة: 604800000 ms = أسبوع)
+// إرسال Ping كل 5 دقائق لضمان عدم نوم استضافة Render
 setInterval(() => {
   https.get(RENDER_URL, () => {}).on('error', () => {});
-}, 604800000);
+}, 300000);
 
 function createBot() {
   console.log('Connecting to Minecraft server...');
 
   const bot = mineflayer.createBot({
     host: 'voltex-smp.aternos.me',
-    port: 61655,
+    port: 61655,   
     username: 'VoltexBot',
     version: '1.20.1'
   });
 
   bot.on('spawn', () => {
-    console.log('Bot successfully joined!');
+    console.log('SUCCESS: Bot joined the server!');
 
     setTimeout(() => {
       bot.chat('/register 123456789 123456789');
       bot.chat('/login 123456789');
-    }, 1500);
+    }, 2000);
 
+    // حركة مستمرة للقفز والتطلع لمنع طرد الـ AFK
     setInterval(() => {
       bot.setControlState('jump', true);
       setTimeout(() => bot.setControlState('jump', false), 300);
@@ -46,7 +47,7 @@ function createBot() {
   });
 
   bot.on('kicked', (reason) => {
-    console.log('Kicked reason:', reason);
+    console.log('Kicked reason:', JSON.stringify(reason));
   });
 
   bot.on('end', () => {
