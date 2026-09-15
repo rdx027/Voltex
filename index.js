@@ -1,40 +1,35 @@
 const mineflayer = require('mineflayer');
 const express = require('express');
 
-// --- إنشاء سيرفر HTTP لمنع Render من النوم ---
 const app = express();
 const PORT = process.env.PORT || 10000;
 
 app.get('/', (req, res) => {
-  res.send('البوت شغال 24/7 بنجاح!');
+  res.send('Bot is running 24/7');
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server listening on port ${PORT}`);
 });
 
-// --- إعدادات البوت ---
 function createBot() {
-  console.log('🔄 جاري محاولة الاتصال بالسيرفر...');
+  console.log('Attempting to connect to Minecraft server...');
 
   const bot = mineflayer.createBot({
-    host: 'knifejaw.aternos.host', //  DynIP من Aternos بدون البورت
-    port: 61655,                   // ضع رقم الـ Port الجديد من Aternos
+    host: 'knifejaw.aternos.host',
+    port: 61655,
     username: 'VoltexBot',
     version: '1.20.1'
   });
 
-  // تسجيل الدخول والتحرك تلقائياً (Anti-AFK)
   bot.on('spawn', () => {
-    console.log('✅ دخل البوت إلى السيرفر ولن يخرج!');
+    console.log('SUCCESS: Bot joined the server!');
     
-    // تسجيل الدخول أو التسجيل تلقائياً
     setTimeout(() => {
       bot.chat('/register 123456789 123456789');
       bot.chat('/login 123456789');
     }, 2000);
 
-    // التحرك الدائم لتفادي الطرد بسبب الـ AFK
     setInterval(() => {
       bot.setControlState('jump', true);
       setTimeout(() => {
@@ -43,14 +38,13 @@ function createBot() {
     }, 15000);
   });
 
-  // إعادة الاتصال التلقائي عند الانقطاع
   bot.on('end', () => {
-    console.log('⚠️ انقطع الاتصال، إعادة الدخول فوراً خلال 5 ثوانٍ...');
+    console.log('Connection lost. Reconnecting in 5 seconds...');
     setTimeout(createBot, 5000);
   });
 
   bot.on('error', (err) => {
-    console.log('❌ خطأ شبكة:', err.message);
+    console.log('Network error:', err.message);
   });
 }
 
