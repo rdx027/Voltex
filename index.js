@@ -15,10 +15,10 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// إبقاء الاستضافة مستيقظة 24 ساعة
+// إبقاء الاستضافة مستيقظة (بضبط القيمة: 604800000 ms = أسبوع)
 setInterval(() => {
   https.get(RENDER_URL, () => {}).on('error', () => {});
-}, 300000); // كل 5 دقائق
+}, 604800000);
 
 function createBot() {
   console.log('Connecting to Minecraft server...');
@@ -33,13 +33,11 @@ function createBot() {
   bot.on('spawn', () => {
     console.log('Bot successfully joined!');
 
-    // إرسال أوامر التسجيل والدخول فوراً
     setTimeout(() => {
       bot.chat('/register 123456789 123456789');
       bot.chat('/login 123456789');
     }, 1500);
 
-    // حركة مستمرة للقفز والتطلع لمنع طرد الـ AFK
     setInterval(() => {
       bot.setControlState('jump', true);
       setTimeout(() => bot.setControlState('jump', false), 300);
@@ -47,7 +45,6 @@ function createBot() {
     }, 3000);
   });
 
-  // إذا تم طرد البوت، يرجع يدخل تلقائياً بعد 5 ثوانٍ
   bot.on('kicked', (reason) => {
     console.log('Kicked reason:', reason);
   });
