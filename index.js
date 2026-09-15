@@ -5,7 +5,6 @@ const https = require('https');
 const app = express();
 const PORT = process.env.PORT || 10000;
 
-// تأكد من أن هذا الرابط يطابق رابط مشروعك الحالي على Render
 const RENDER_URL = 'https://voltex-smp-270.onrender.com';
 
 app.get('/', (req, res) => {
@@ -16,7 +15,6 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// إرسال Ping كل 5 دقائق لضمان عدم نوم Render
 setInterval(() => {
   https.get(RENDER_URL, () => {}).on('error', () => {});
 }, 300000);
@@ -26,10 +24,12 @@ function createBot() {
 
   const bot = mineflayer.createBot({
     host: '185.107.192.98',
-    port: 61655, // <--- غير هذا الرقم إلى رقم البورت الجديد من أترنوس
-    username: 'Voltex_99',
+    port: 61655,
+    username: 'VoltexBot_99',
     version: '1.20.1',
-    physicsEnabled: false
+    physicsEnabled: false,
+    // إضافة إعدادات لتجاوز مهلة الاتصال البطيئة
+    checkTimeoutInterval: 60000
   });
 
   bot.once('spawn', () => {
