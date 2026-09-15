@@ -15,7 +15,7 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// إرسال Ping كل 5 دقائق لتبقى استضافة Render مستيقظة
+// إرسال Ping كل 5 دقائق لضمان عدم نوم Render
 setInterval(() => {
   https.get(RENDER_URL, () => {}).on('error', () => {});
 }, 300000);
@@ -26,20 +26,21 @@ function createBot() {
   const bot = mineflayer.createBot({
     host: '185.107.192.98',
     port: 61655, // تأكد من البورت الحالي في Aternos
-    username: 'Voltex_Silent', // اسم جديد لتفادي أي حظر سابق
+    username: 'Voltex_Silent',
     version: '1.20.1'
   });
 
   bot.on('spawn', () => {
-    console.log('SUCCESS: Bot inside server (No Chat / Silent)!');
+    console.log('SUCCESS: Bot inside server!');
 
-    // قفز خفيف فقط لمنع طرد الـ AFK بدون كتابة أي شيء في الشات
+    // تغيير زاوية الرؤية فقط كل 4 ثوانٍ لمنع الـ AFK بدون أي حركة مكانية تسبب طرد
     setInterval(() => {
       if (bot.entity) {
-        bot.setControlState('jump', true);
-        setTimeout(() => bot.setControlState('jump', false), 300);
+        const yaw = Math.random() * Math.PI * 2;
+        const pitch = (Math.random() - 0.5) * Math.PI;
+        bot.look(yaw, pitch, true);
       }
-    }, 5000);
+    }, 4000);
   });
 
   bot.on('kicked', (reason) => {
@@ -47,7 +48,6 @@ function createBot() {
   });
 
   bot.on('end', () => {
-    // الانتظار 25 ثانية قبل إعادة الاتصال لتجاوز حظر Connection throttled
     console.log('Disconnected. Reconnecting in 25 seconds...');
     setTimeout(createBot, 25000);
   });
@@ -57,5 +57,4 @@ function createBot() {
   });
 }
 
-// مهلة 10 ثوانٍ قبل أول اتصال لتنظيف المحاولات القديمة
-setTimeout(createBot, 10000);
+setTimeout(createBot, 5000);
