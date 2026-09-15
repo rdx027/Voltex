@@ -15,7 +15,7 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// إبقاء Render مستيقظاً كل 5 دقائق
+// إرسال Ping كل 5 دقائق لضمان بقاء Render مستيقظاً
 setInterval(() => {
   https.get(RENDER_URL, () => {}).on('error', () => {});
 }, 300000);
@@ -25,29 +25,30 @@ function createBot() {
 
   const bot = mineflayer.createBot({
     host: '185.107.192.98',
-    port: 61655, // تأكد من البورت الحالي في Aternos
+    port: 61655, // تأكد من رقم البورت الحالي من أترنوس
     username: 'Voltex_Silent',
     version: '1.20.1',
-    physicsEnabled: false, // تعطيل محرك الفيزياء تماماً من البداية
-    checkTimeoutInterval: 60 * 1000
+    physicsEnabled: false
   });
 
   bot.once('spawn', () => {
-    console.log('SUCCESS: Bot inside server!');
+    console.log('SUCCESS: Bot inside server securely!');
   });
 
   bot.on('kicked', (reason) => {
     console.log('Kicked reason:', JSON.stringify(reason));
   });
 
-  bot.on('end', () => {
-    console.log('Disconnected. Reconnecting in 25 seconds...');
-    setTimeout(createBot, 25000);
+  bot.on('end', (reason) => {
+    console.log(`Connection ended (${reason}). Reconnecting in 30 seconds...`);
+    setTimeout(createBot, 30000);
   });
 
+  // منع السيرفر من الانهيار عند حدوث ECONNRESET
   bot.on('error', (err) => {
-    console.log('Error:', err.message);
+    console.log('Socket Error caught:', err.message);
   });
 }
 
+// تأكد من أن السيرفر شغال في أترنوس أولاً، ثم اترك البوت يتصل
 setTimeout(createBot, 5000);
