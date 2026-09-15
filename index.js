@@ -10,7 +10,7 @@ http.createServer((req, res) => {
 // إعدادات بوت الماين كرافت
 function createBot() {
   const bot = mineflayer.createBot({
-    host: 'Voltex-smp.aternos.me',
+    host: 'Voltex-smp.aternos.me:61655',
     port: 61655,
     username: 'Bot_247',
     version: '1.20.1'
