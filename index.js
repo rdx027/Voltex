@@ -1,57 +1,71 @@
 const mineflayer = require('mineflayer');
 const express = require('express');
+const https = require('https');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
 
+// رابط خدمة Render الخاصة بك لمنع السكون 24/7
+const RENDER_URL = 'https://voltex-c8qu.onrender.com';
+
 app.get('/', (req, res) => {
-  res.send('Bot is active 24/7');
+  res.send('Bot is running 24/7 non-stop!');
 });
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
+// إرسال طلب ذاتي كل 5 دقائق لمنع سيرفر Render من السكون (Sleep)
+setInterval(() => {
+  https.get(RENDER_URL, (res) => {
+    console.log('Keep-Alive ping sent successfully.');
+  }).on('error', (err) => {
+    console.log('Ping error:', err.message);
+  });
+}, 5 * 60 * 1000); // كل 5 دقائق
+
 function createBot() {
-  console.log('Attempting to connect to Minecraft server...');
+  console.log('Connecting to Minecraft server...');
 
   const bot = mineflayer.createBot({
-    host: 'Voltex-smp.aternos.me',
+    host: 'knifejaw.aternos.host',
     port: 61655,
     username: 'VoltexBot',
     version: '1.20.1'
   });
 
   bot.on('spawn', () => {
-    console.log('SUCCESS: Bot joined the server!');
+    console.log('SUCCESS: Bot joined the server and will stay 24/7!');
 
-    // تسجيل الدخول بعد 3 ثوانٍ
+    // تسجيل الدخول
     setTimeout(() => {
       bot.chat('/register 123456789 123456789');
       bot.chat('/login 123456789');
-    }, 3000);
+    }, 2000);
 
-    // حركات Anti-AFK متقدمة (قفز وتدوير الكاميرا)
+    // حركات متواصلة لمنع الطرد داخل ماينكرافت
     setInterval(() => {
-      // قفزة خفيفة
+      bot.setControlState('forward', true);
       bot.setControlState('jump', true);
-      setTimeout(() => bot.setControlState('jump', false), 400);
 
-      // التفات بالرأس زاوية عشوائية كلاعب حقيقي
+      setTimeout(() => {
+        bot.setControlState('forward', false);
+        bot.setControlState('jump', false);
+      }, 500);
+
       const yaw = Math.random() * Math.PI * 2;
-      const pitch = (Math.random() - 0.5) * Math.PI;
-      bot.look(yaw, pitch, true);
-    }, 10000); // كل 10 ثوانٍ
+      bot.look(yaw, 0, true);
+    }, 2000);
   });
 
-  // طباعة سبب الطرد في اللوج لمعرفة المشكلة بالضبط
   bot.on('kicked', (reason) => {
-    console.log('Bot was kicked. Reason:', JSON.stringify(reason));
+    console.log('Bot was kicked:', JSON.stringify(reason));
   });
 
   bot.on('end', () => {
-    console.log('Bot disconnected. Reconnecting in 5 seconds...');
-    setTimeout(createBot, 5000);
+    console.log('Disconnected. Reconnecting in 3 seconds...');
+    setTimeout(createBot, 3000);
   });
 
   bot.on('error', (err) => {
