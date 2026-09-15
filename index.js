@@ -15,7 +15,6 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// إرسال Ping كل 5 دقائق لضمان عدم نوم Render
 setInterval(() => {
   https.get(RENDER_URL, () => {}).on('error', () => {});
 }, 300000);
@@ -24,11 +23,12 @@ function createBot() {
   console.log('Connecting to Minecraft server...');
 
   const bot = mineflayer.createBot({
-    host: 'voltex-smp.aternos.me', // استخدام النطاق المباشر لتفادي أخطاء المهلة
+    host: 'voltex-smp.aternos.me',
+    port: 61655, // تحديد البورت صراحة بجانب النطاق لكي يتصل عبره مباشرة دون تخمين
     username: 'VoltexBot_99',
     version: '1.20.1',
     physicsEnabled: false,
-    checkTimeoutInterval: 60000 // مهلة أطول لقبول الاتصال بنجاح
+    checkTimeoutInterval: 60000
   });
 
   bot.once('spawn', () => {
