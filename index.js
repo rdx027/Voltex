@@ -15,7 +15,7 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// إرسال Ping كل 5 دقائق لضمان عدم نوم Render
+// إرسال Ping كل 5 دقائق لضمان بقاء Render مستيقظاً
 setInterval(() => {
   https.get(RENDER_URL, () => {}).on('error', () => {});
 }, 300000);
@@ -25,27 +25,31 @@ function createBot() {
 
   const bot = mineflayer.createBot({
     host: '185.107.192.98',
-    port: 61655,
-    username: 'VoltexBot_v2',      
+    port: 61655, 
+    username: 'VoltexBot_v3',
     version: '1.20.1'
   });
 
   bot.on('spawn', () => {
     console.log('SUCCESS: Bot joined!');
 
-    // تأخير 3 ثوانٍ ثم إرسال أوامر التسجيل
+    // إرسال أمر الدخول فقط بعد 4 ثوانٍ من الانضمام
+    setTimeout(() => {
+      bot.chat('/login 123456789');
+    }, 4000);
+
+    // إذا لم يكن مسجلاً سابقاً، يرسل التسجيل بعد 7 ثوانٍ
     setTimeout(() => {
       bot.chat('/register 123456789 123456789');
-      bot.chat('/login 123456789');
-    }, 3000);
+    }, 7000);
 
-    // حركة القفز لمنع طرد الـ AFK
+    // حركة قفز خفيفة كل 5 ثوانٍ لمنع طرد الـ AFK
     setInterval(() => {
       if (bot.entity) {
         bot.setControlState('jump', true);
         setTimeout(() => bot.setControlState('jump', false), 300);
       }
-    }, 4000);
+    }, 5000);
   });
 
   bot.on('kicked', (reason) => {
