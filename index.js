@@ -15,7 +15,7 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// إرسال Ping كل 5 دقائق لضمان عدم نوم Render
+// إبقاء Render مستيقظاً كل 5 دقائق
 setInterval(() => {
   https.get(RENDER_URL, () => {}).on('error', () => {});
 }, 300000);
@@ -25,20 +25,24 @@ function createBot() {
 
   const bot = mineflayer.createBot({
     host: '185.107.192.98',
-    port: 61655, // تأكد من البورت الحالي في Aternos
+    port: 61655, // تأكد من البورت الحالي من Aternos
     username: 'Voltex_Silent',
-    version: '1.20.1'
+    version: '1.20.1',
+    checkTimeoutInterval: 60 * 1000 // رفع مهلة التحقق لمنع الفصل التلقائي
   });
 
-  bot.on('spawn', () => {
+  // تعطيل الفيزياء والجاذبية فور الانضمام لتفادي Invalid move packet
+  bot.once('spawn', () => {
     console.log('SUCCESS: Bot inside server!');
 
-    // تغيير زاوية الرؤية فقط كل 4 ثوانٍ لمنع الـ AFK بدون أي حركة مكانية تسبب طرد
+    if (bot.physics) {
+      bot.physics.enabled = false; // إلغاء حسابات الحركة والفيزياء بالكامل
+    }
+
+    // التفاف الرؤية البسيط فقط لمنع طرد الـ AFK
     setInterval(() => {
       if (bot.entity) {
-        const yaw = Math.random() * Math.PI * 2;
-        const pitch = (Math.random() - 0.5) * Math.PI;
-        bot.look(yaw, pitch, true);
+        bot.look(Math.random() * Math.PI * 2, 0, true);
       }
     }, 4000);
   });
