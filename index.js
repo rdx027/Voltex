@@ -1,52 +1,51 @@
 const mineflayer = require('mineflayer');
-const express = require('express');
-const https = require('https');
 
-const app = express();
-const PORT = process.env.PORT || 10000;
-
-const RENDER_URL = 'https://voltex-smp-270.onrender.com';
-
-app.get('/', (req, res) => {
-  res.send('Bot Status: Online 24/7');
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
-setInterval(() => {
-  https.get(RENDER_URL, () => {}).on('error', () => {});
-}, 300000);
+const botOptions = {
+    host: 'Voltex-smp.aternos.me', // ضع هنا آيباد سيرفر ماين كرافت (أو رابط الأترنوس بدون https)
+    port: 61655,        // ضع هنا البورت الخاص بالسيرفر
+    name: 'Voltex-bot-99',        // اسم البوت داخل اللعبة
+    version: false          // لتحديد الإصدار تلقائياً أو ضع رقم الإصدار مثل '1.20.4'
+};
 
 function createBot() {
-  console.log('Connecting to Minecraft server...');
+    const bot = mineflayer.createBot(botOptions);
 
-  const bot = mineflayer.createBot({
-    host: 'voltex-smp.aternos.me',
-    port: 61655, // تحديد البورت صراحة بجانب النطاق لكي يتصل عبره مباشرة دون تخمين
-    username: 'VoltexBot_99',
-    version: '1.20.1',
-    physicsEnabled: false,
-    checkTimeoutInterval: 60000
-  });
+    // عندما ينجح البوت في الدخول للسيرفر
+    bot.on('spawn', () => {
+        console.log('تم تسجيل دخول البوت بنجاح وثبات!');
+        startAntiAfk(bot);
+    });
 
-  bot.once('spawn', () => {
-    console.log('SUCCESS: Bot inside server securely!');
-  });
+    // إذا حدث خطأ في الاتصال
+    bot.on('error', (err) => {
+        console.log('حدث خطأ:', err);
+    });
 
-  bot.on('kicked', (reason) => {
-    console.log('Kicked reason:', JSON.stringify(reason));
-  });
-
-  bot.on('end', (reason) => {
-    console.log(`Connection ended (${reason}). Reconnecting in 30 seconds...`);
-    setTimeout(createBot, 30000);
-  });
-
-  bot.on('error', (err) => {
-    console.log('Socket Error caught:', err.message);
-  });
+    // إذا خرج البوت أو انقطع الاتصال، سيحاول الدخول مرة أخرى تلقائياً
+    bot.on('end', () => {
+        console.log('انقطع الاتصال بالسيرفر. جاري إعادة المحاولة خلال 10 ثوانٍ...');
+        setTimeout(() => {
+            createBot();
+        }, 10000); // 10 ثوانٍ قبل إعادة المحاولة
+    });
+    
+    // منع طرد البوت بسبب الأخطاء الحرجة
+    bot.on('kicked', (reason) => {
+        console.log('تم طرد البوت بسبب:', reason);
+    });
 }
 
-setTimeout(createBot, 5000);
+// دالة لمنع الخمول (Anti-AFK) حتى لا يطرد السيرفر البوت لعدم الحركة
+function startAntiAfk(bot) {
+    setInterval(() => {
+        if (!bot.entity) return;
+        // يقوم البوت بحركة بسيطة كل دقيقتين (القفز أو الالتفاف)
+        bot.setControlState('jump', true);
+        setTimeout(() => {
+            bot.setControlState('jump', false);
+        }, 500);
+    }, 120000); // كل دقيقتين
+}
+
+// تشغيل البوت لأول مرة
+createBot();
