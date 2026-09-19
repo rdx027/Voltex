@@ -17,7 +17,7 @@ app.listen(PORT, () => {
 const botOptions = {
     host: 'voltex-smp.aternos.me', // ضع الآيبي المباشر هنا
     port: 61655,                  // ضع البورت هنا
-    name: 'Voltex-bot-99',        // اسم البوت داخل اللعبة
+    name: 'Voltex-ssmp',        // اسم البوت داخل اللعبة
     version: false                // تحديد الإصدار تلقائياً
 };
 
