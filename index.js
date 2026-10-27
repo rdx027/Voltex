@@ -1,59 +1,53 @@
 const mineflayer = require('mineflayer');
 const express = require('express');
+const https = require('https');
 
-// خادم ويب وهمي لإرضاء استضافة Render ومنع إغلاق التطبيق
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
+const RENDER_URL = 'https://voltex-smp-270.onrender.com';
 
+// خادم الويب لمنع نوم الرندر
 app.get('/', (req, res) => {
-    res.send('Bot is running and alive!');
+  res.send('VoltexBot is active 24/7!');
 });
 
 app.listen(PORT, () => {
-    console.log(`Web server is running on port ${PORT}`);
+  console.log(`Web server running on port ${PORT}`);
 });
 
-// إعدادات بوت ماين كرافت (صامت تماماً ولا يكتب أي شيء في الشات)
-const botOptions = {
-    host: 'voltex-smp.aternos.me', // ضع الآيبي المباشر هنا
-    port: 61655,                  // ضع البورت هنا
-    name: 'Voltex-ssmp',        // اسم البوت داخل اللعبة
-    version: false                // تحديد الإصدار تلقائياً
-};
+// إرسال طلب كل 5 دقائق للبقاء نشطاً
+setInterval(() => {
+  https.get(RENDER_URL, () => {}).on('error', () => {});
+}, 300000);
 
 function createBot() {
-    const bot = mineflayer.createBot(botOptions);
+  console.log('Attempting to connect to Minecraft server...');
 
-    bot.on('spawn', () => {
-        console.log('تم تسجيل دخول البوت بنجاح وثبات!');
-        startAntiAfk(bot);
-    });
+  const bot = mineflayer.createBot({
+    host: 'Voltex-SMP.aternos.me',
+    port: 61655,
+    username: 'VoltexBot_09',
+    version: '1.20.1',
+    physicsEnabled: false,
+    checkTimeoutInterval: 60000
+  });
 
-    bot.on('error', (err) => {
-        console.log('حدث خطأ:', err);
-    });
+  bot.once('spawn', () => {
+    console.log('SUCCESS: Bot inside server securely!');
+  });
 
-    bot.on('end', () => {
-        console.log('انقطع الاتصال بالسيرفر. جاري إعادة المحاولة خلال 10 ثوانٍ...');
-        setTimeout(() => {
-            createBot();
-        }, 10000);
-    });
-    
-    bot.on('kicked', (reason) => {
-        console.log('تم طرد البوت بسبب:', reason);
-    });
+  bot.on('kicked', (reason) => {
+    console.log('Kicked:', JSON.stringify(reason));
+  });
+
+  bot.on('end', (reason) => {
+    console.log(`Disconnected (${reason}). Reconnecting in 30 seconds...`);
+    setTimeout(createBot, 30000);
+  });
+
+  bot.on('error', (err) => {
+    console.log('Error:', err.message);
+  });
 }
 
-// دالة حماية من الخمول (تقوم بالقفز فقط بهدوء دون إزعاج أو كتابة أي رسائل)
-function startAntiAfk(bot) {
-    setInterval(() => {
-        if (!bot.entity) return;
-        bot.setControlState('jump', true);
-        setTimeout(() => {
-            bot.setControlState('jump', false);
-        }, 500);
-    }, 120000); // كل دقيقتين
-}
-
-createBot();
+setTimeout(createBot, 5000);
