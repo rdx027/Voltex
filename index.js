@@ -25,7 +25,7 @@ function createBot() {
   const bot = mineflayer.createBot({
     host: 'Voltex-SMP.aternos.me',
     port: 61655,
-    username: 'VoltexBot_19',
+    username: 'By_RDX',
     version: '1.20.1',
     checkTimeoutInterval: 60000
   });
